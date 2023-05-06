@@ -1,6 +1,7 @@
 class Play extends Phaser.Scene{
     constructor(){
         super("playScene");
+        this.highScore = 0;
     }
     preload() {
         // load images/tile sprites
@@ -42,8 +43,24 @@ class Play extends Phaser.Scene{
 
         //score initialize
         this.p1Score = 0;
+        
         // display score
         let scoreConfig = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            backgroundColor: '#F3B141',
+            color: '#843605',
+            align: 'left',
+            padding: {
+            top: 5,
+            bottom: 5,
+            },
+            fixedWidth: 100
+        }
+        this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, scoreConfig);
+
+        //Display high score
+        let highScoreConfig = {
             fontFamily: 'Courier',
             fontSize: '28px',
             backgroundColor: '#F3B141',
@@ -54,9 +71,16 @@ class Play extends Phaser.Scene{
             bottom: 5,
             },
             fixedWidth: 100
+            
         }
-        this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, this.p1Score, scoreConfig);
-
+        this.scoreRight = this.add.text(game.config.height, borderUISize + borderPadding*2, this.highScore, highScoreConfig);
+        
+        
+        //this.timer = this.time.addEvent({ delay: 1000, callback: onEvent(), callbackScope: this, loop: true });
+        
+        
+        
+        
         //Game over flag
         this.gameOver = false;
 
@@ -68,8 +92,49 @@ class Play extends Phaser.Scene{
             this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or <- for Menu', scoreConfig).setOrigin(0.5);
             this.gameOver = true;
         }, null, this);
+
+
+        //Timer text config 
+        this.timeInSec = (game.settings.gameTimer) / 1000;
+        let timerConfig = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            backgroundColor: '#F3B141',
+            color: '#843605',
+            align: 'center',
+            padding: {
+            top: 5,
+            bottom: 5,
+            },
+            fixedWidth: 100
+        }
+        this.timerText = this.add.text(game.config.height / 2, borderUISize + borderPadding*2, this.timeInSec, timerConfig);
+
     }
+/*
+    onEvent(){
+        this.timeInSec--;
+        this.timerText.text = this.timeInSec;
+    }
+*/
+
     update(){
+        
+        //Updating timer 
+        this.timerText.text = this.timeInSec - this.clock.getElapsedSeconds();
+        //var fCounter = 0;
+        //this.fCounter++;
+
+
+        /*
+        if(!this.gameOver && (this.fCounter % 60 == 0)){
+            this.fCounter = 0;
+            this.timeInSec--;
+            this.timer.text = this.timeInSec;
+        }
+        */
+        
+
         // check key input for restart
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyR)) {
             this.scene.restart();
@@ -127,6 +192,12 @@ class Play extends Phaser.Scene{
         });
         // score add and repaint
         this.p1Score += ship.points;
+        
+        if(this.p1Score > this.highScore){
+            this.highScore = this.p1Score;
+            this.scoreRight.text = this.highScore;
+        }
+        
         this.scoreLeft.text = this.p1Score;
         this.sound.play('sfx_explosion');         
       }  
