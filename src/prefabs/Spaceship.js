@@ -14,6 +14,11 @@ class Spaceship extends Phaser.GameObjects.Sprite {
         if(this.x <= 0 - this.width){
             this.reset();
         }
+        //if(this.clock.getElapsedSeconds() == 3){
+            //this.moveSpeed += 5;               // update spaceships (x3)
+            //this.ship02.moveSpeed += 5;
+            //this.ship03.moveSpeed += 5;
+        //}
     }
 
     //reset position
