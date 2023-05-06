@@ -73,12 +73,7 @@ class Play extends Phaser.Scene{
             fixedWidth: 100
             
         }
-        this.scoreRight = this.add.text(game.config.height, borderUISize + borderPadding*2, this.highScore, highScoreConfig);
-        
-        
-        //this.timer = this.time.addEvent({ delay: 1000, callback: onEvent(), callbackScope: this, loop: true });
-        
-        
+        this.scoreRight = this.add.text(game.config.height, borderUISize + borderPadding*2, this.highScore, highScoreConfig);    
         
         
         //Game over flag
@@ -108,46 +103,52 @@ class Play extends Phaser.Scene{
             },
             fixedWidth: 100
         }
-        this.timerText = this.add.text((game.config.height / 2) + borderPadding, borderUISize + borderPadding*2, this.timeInSec, timerConfig);
-       // console.log(this.clock.getElapsedSeconds())
+        this.timerText = this.add.text((game.config.height / 2) + borderPadding, borderUISize + borderPadding, this.timeInSec, timerConfig);
 
         //Flag for timed speed
         this.speedFlag = false;
+
+        
+        //Fire text code
+        let fireConfig = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            backgroundColor: '#F3B141',
+            color: '#843605',
+            align: 'center',
+            padding: {
+            top: 5,
+            bottom: 5,
+            },
+            fixedWidth: 100
+        }
+        this.fireText = this.add.text((game.config.height / 2) + borderPadding, borderUISize + borderPadding*4, "FIRE!", fireConfig);
+
     }
-/*
-    onEvent(){
-        this.timeInSec--;
-        this.timerText.text = this.timeInSec;
-    }
-*/
+
 
     update(){
-        
+
+        //Updating fire
+        if(this.p1Rocket.isFiring){
+            this.fireText.setVisible(false);
+        }
+        else{
+            this.fireText.setVisible(true);
+        }
+
         //Updating timer 
-        this.timerText.text = this.clock.getRemainingSeconds();//this.timeInSec - this.clock.getElapsedSeconds();
-        //console.log(game.settings.spaceShipSpeed);
-        //console.log("GHello");
+        this.timerText.text = this.clock.getRemainingSeconds();
+        
         
         if(this.clock.getElapsedSeconds() >= 30 && !this.speedFlag){
             this.speedFlag = true;
-            //console.log(this.clock.getElapsedSeconds())
-            //console.log("HHello");
+           
             this.ship01.moveSpeed +=3;               // update spaceships (x3)
-            this.ship02.moveSpeed++;
+            this.ship02.moveSpeed += 3;
             this.ship03.moveSpeed += 2;
             game.settings.spaceShipSpeed = 10;
         }
-        //var fCounter = 0;
-        //this.fCounter++;
-
-
-        /*
-        if(!this.gameOver && (this.fCounter % 60 == 0)){
-            this.fCounter = 0;
-            this.timeInSec--;
-            this.timer.text = this.timeInSec;
-        }
-        */
         
 
         // check key input for restart
@@ -168,27 +169,25 @@ class Play extends Phaser.Scene{
         if(this.checkCollision(this.p1Rocket, this.ship03)) {
             this.p1Rocket.reset();
             this.shipExplode(this.ship03);
-
-            var rt = this.clock.getRemaining();
+            
+            //Adding Delay to timer and removing fire text
             this.clock.delay += 10000;
-            //this.clock.addEvent({
-                //delay: rt + 10000});
+            
+            
         }
         if (this.checkCollision(this.p1Rocket, this.ship02)) {
             this.p1Rocket.reset();
             this.shipExplode(this.ship02);
-            var rt = this.clock.getRemaining();
+            
             this.clock.delay += 10000;
-            //this.clock.addEvent({
-                //delay: rt + 10000});
+            
         }
         if (this.checkCollision(this.p1Rocket, this.ship01)) {
             this.p1Rocket.reset();
             this.shipExplode(this.ship01);
-            var rt = this.clock.getRemaining();
+    
             this.clock.delay += 10000;
-            //this.clock.addEvent({
-                //delay: rt + 10000});
+            
         }
 
         if (this.gameOver && Phaser.Input.Keyboard.JustDown(keyLEFT)) {
@@ -217,6 +216,7 @@ class Play extends Phaser.Scene{
           ship.reset();                         // reset ship position
           ship.alpha = 1;                       // make ship visible again
           boom.destroy();                       // remove explosion sprite
+          
         });
         // score add and repaint
         this.p1Score += ship.points;
