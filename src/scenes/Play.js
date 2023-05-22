@@ -8,12 +8,14 @@ class Play extends Phaser.Scene{
         this.load.image('rocket', './assets/rocket.png');
         this.load.image('spaceship', './assets/spaceship.png');
         this.load.image('starfield', './assets/starfield.png');
+        this.load.image('starfield2', './assets/starfield2.png');
+        this.load.image('ship2', './assets/spaceship2.png');
         // load spritesheet
         this.load.spritesheet('explosion', './assets/explosion.png', {frameWidth: 64, frameHeight: 32, startFrame: 0, endFrame: 9});
       }
     create(){
         //this.add.text(20, 20, "Rocket Patrol Play");
-        this.starfield = this.add.tileSprite(0, 0, 640, 480, 'starfield').setOrigin(0,0);
+        this.starfield = this.add.tileSprite(0, 0, 640, 480, 'starfield2').setOrigin(0,0);
         // green UI background
         this.add.rectangle(0, borderUISize + borderPadding, game.config.width, borderUISize * 2, 0x00FF00).setOrigin(0, 0);
         // white borders
@@ -28,11 +30,22 @@ class Play extends Phaser.Scene{
         this.ship01 = new Spaceship(this, game.config.width + borderUISize*6, borderUISize*4, 'spaceship', 0, 30).setOrigin(0, 0);
         this.ship02 = new Spaceship(this, game.config.width + borderUISize*3, borderUISize*5 + borderPadding*2, 'spaceship', 0, 20).setOrigin(0,0);
         this.ship03 = new Spaceship(this, game.config.width, borderUISize*6 + borderPadding*4, 'spaceship', 0, 10).setOrigin(0,0);
+        this.ship04 = new Spaceship(this, game.config.width, borderUISize*7 + borderPadding*4, 'ship2', 0, 40).setOrigin(0, 0);
+
+        //Making ship2 faster
+        if(this.ship04.moveSpeed > 0){
+            this.ship04.moveSpeed += 2;
+        }else{
+            this.ship04.moveSpeed -= 2;
+        }
+        
         
         keyF = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
         keyLEFT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         keyRIGHT = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+        pointer = this.input.activePointer;
+
 
         //animation config
         this.anims.create({
@@ -144,10 +157,37 @@ class Play extends Phaser.Scene{
         if(this.clock.getElapsedSeconds() >= 30 && !this.speedFlag){
             this.speedFlag = true;
            
-            this.ship01.moveSpeed +=3;               // update spaceships (x3)
-            this.ship02.moveSpeed += 3;
+            if(this.ship01.moveSpeed > 0){
+                this.ship01.moveSpeed += 3;
+            }else{
+                this.ship01.moveSpeed -= 3;
+            }
+
+            if(this.ship02.moveSpeed > 0){
+                this.ship02.moveSpeed += 2;
+            }else{
+                this.ship02.moveSpeed -= 2;
+            }
+
+            if(this.ship03.moveSpeed > 0){
+                this.ship03.moveSpeed += 2;
+            }else{
+                this.ship03.moveSpeed -= 2;
+            }
+
+            if(this.ship04.moveSpeed > 0){
+                this.ship04.moveSpeed += 2;
+            }else{
+                this.ship04.moveSpeed -= 2;
+            }
+
+            /*
+            this.ship01.moveSpeed += 3;               // update spaceships (x3)
+            this.ship02.moveSpeed += 2;
             this.ship03.moveSpeed += 2;
-            game.settings.spaceShipSpeed = 10;
+            this.ship04.moveSpeed += 2
+            */
+            //game.settings.spaceShipSpeed = 10;
         }
         
 
@@ -161,6 +201,7 @@ class Play extends Phaser.Scene{
             this.ship01.update();               // update spaceships (x3)
             this.ship02.update();
             this.ship03.update();
+            this.ship04.update();
         }
         
       
@@ -185,6 +226,13 @@ class Play extends Phaser.Scene{
         if (this.checkCollision(this.p1Rocket, this.ship01)) {
             this.p1Rocket.reset();
             this.shipExplode(this.ship01);
+    
+            this.clock.delay += 10000;
+            
+        }
+        if (this.checkCollision(this.p1Rocket, this.ship04)) {
+            this.p1Rocket.reset();
+            this.shipExplode(this.ship04);
     
             this.clock.delay += 10000;
             
